@@ -25,6 +25,38 @@ int main()
         {
             obj.moveLeft();
         }
+        if (GetAsyncKeyState('I'))
+        {
+            obj.goToRowCol(12, 82);
+            string value;
+            cout <<"Enter value: ";
+            cin >> value;
+            obj.insertValue(value);
+        }
+        if (GetAsyncKeyState(VK_UP))
+        {
+            obj.insertRowAbove();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState(VK_DOWN))
+        {
+            obj.insertRowBelow();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState(VK_RIGHT))
+        {
+            obj.insertColumnToRight();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState(VK_LEFT))
+        {
+            obj.insertColumnToLeft();
+            obj.printGrid();
+            obj.printData();
+        }
         Sleep(100);
     }
     // obj.moveCursor();

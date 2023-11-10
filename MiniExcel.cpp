@@ -10,7 +10,7 @@ struct Cell
     Cell* right;
     Cell* up;
     Cell* down;
-    Cell(string data = " ")
+    Cell(string data = "     ")
     {
         this->data = data;
         left = nullptr;
@@ -90,8 +90,32 @@ public:
             goToRowCol(row * cellHeight + i, col * cellWidth + cellWidth);
             cout << c;
         }
-        goToRowCol((row * cellHeight) + cellHeight / 2, (col * cellWidth) + cellWidth / 2);
-        cout << "     ";
+        // goToRowCol((row * cellHeight) + cellHeight / 2, (col * cellWidth) + cellWidth / 2);
+        // cout << "     ";
+    }
+    void printRow()
+    {
+       for (int ci = 0, ri = rows - 1; ci < cols; ci++)
+		{
+
+			printCell(ri, ci, 7);
+		}
+        rows++;
+        // printGrid();
+    }
+    void printData()
+    {
+        Cell* temp = head;
+        for (int i = 0; i < rows; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = 0; j < cols; j++)
+            {
+                printCellData(i, j, temp, 10);
+                temp = temp -> right;
+            }
+            temp = temp2 -> down;
+        }
     }
     void printGrid()
     {
@@ -116,7 +140,20 @@ public:
         }
         return curr;
     }
-    Cell* insertRowBelow()
+    Cell* newCol()
+    {
+        Cell* temp = new Cell();
+        Cell* curr = temp;
+        for (int i = 0; i < rows - 1; i++)
+        {
+            Cell* temp2 = new Cell();
+            temp -> down = temp2;
+            temp2 -> up = temp;
+            temp = temp2;
+        }
+        return curr;
+    }
+    void insertRowBelow()
     {
         Cell* temp2 = newRow();
         Cell* temp1 = current;
@@ -125,14 +162,140 @@ public:
         {
             temp1 = temp1 -> left;
         }
-        while (temp1 != nullptr)
+        if (temp1 -> down == nullptr)
         {
-            temp1 -> down = temp2;
-            temp2 -> up = temp1;
-            temp1 = temp1 -> right;
-            temp2 = temp2 -> right;
+            while (temp1 != nullptr)
+            {
+                temp1 -> down = temp2;
+                temp2 -> up = temp1;
+                temp1 = temp1 -> right;
+                temp2 = temp2 -> right;
+            }
+        }
+        else 
+        {
+            Cell* temp3 = temp1 -> down;
+            while (temp1 != nullptr)
+            {
+                temp3 -> up = temp2;
+                temp1 -> down = temp2;
+                temp2 -> up = temp1;
+                temp2 -> down = temp3;
+                temp1 = temp1 -> right;
+                temp2 = temp2 -> right;
+                temp3 = temp3 -> right;
+            }
         }
         rows++;
+    }
+    void insertRowAbove()
+    {
+        Cell* temp2 = newRow();
+        Cell* temp1 = current;
+        // loop to reach the start of current list
+        while (temp1 -> left != nullptr)
+        {
+            temp1 = temp1 -> left;
+        }
+        if (temp1 -> up == nullptr)
+        {
+            head = temp2;
+            while (temp1 != nullptr)
+            {
+                temp1 -> up = temp2;
+                temp2 -> down = temp1;
+                temp1 = temp1 -> right;
+                temp2 = temp2 -> right;
+            }
+        }
+        else
+        {
+           Cell* temp3 = temp1 -> up;
+            while (temp1 != nullptr)
+            {
+                temp1 -> up = temp2;
+                temp2 -> up = temp3;
+                temp3 -> down = temp2;
+                temp2 -> down = temp1;
+                temp1 = temp1 -> right;
+                temp2 = temp2 -> right;
+                temp3 = temp3 -> right;
+            }
+        }
+        currentRow++;
+        rows++;
+        // printGrid();
+        // printData();
+    }
+    void insertColumnToRight()
+    {
+        Cell* temp2 = newCol();
+        Cell* temp1 = current;
+        while(temp1 -> up != nullptr)
+        {
+            temp1 = temp1 -> up;
+        }
+        if (temp1 -> right == nullptr)
+        {
+            while (temp1 != nullptr)
+            {
+                temp1 -> right = temp2;
+                temp2 -> left = temp1;
+                temp1 = temp1 -> down;
+                temp2 = temp2 -> down;
+            }
+        }
+        else 
+        {
+            Cell* temp3 = temp1 -> right;
+            while (temp1 != nullptr)
+            {
+                temp1 -> right = temp2;
+                temp2 -> right = temp3;
+                temp3 -> left = temp2;
+                temp2 -> left = temp1;
+                temp1 = temp1 -> down;
+                temp2 = temp2 -> down;
+                temp3 = temp3 -> down;
+            }
+        }
+        cols++;
+    }
+    void insertColumnToLeft()
+    {
+        Cell* temp1 = current;
+        Cell* temp2 = newCol();
+        while(temp1 -> up != nullptr)
+        {
+            temp1 = temp1 -> up;
+        }
+        if (temp1 -> left == nullptr)
+        {
+            while (temp1 != nullptr)
+            {
+                temp1 -> left = temp2;
+                temp2 -> right = temp1;
+                temp1 = temp1 -> down;
+                temp2 = temp2 -> down;
+            }
+            head = head -> left;
+        }
+        else
+        {
+            Cell* temp3 = temp1 -> left;
+            while (temp1 != nullptr)
+            {
+                temp1 -> left = temp2;
+                temp2 -> right = temp1;
+                temp3 -> right = temp2;
+                temp2 -> left = temp3;
+                temp1 = temp1 -> down;
+                temp2 = temp2 -> down;
+                temp3 = temp3 -> down;
+            }
+        }
+        cols++;
+        currentCol++;
     }
     void moveDown()
     {
@@ -174,6 +337,36 @@ public:
             printCell(currentRow, currentCol, 10);
         }
     }
-
-
+    void insertValue(string value)
+    {
+        bool flag = isDigit(value);
+        if (flag)
+        {
+            current -> data = value;
+        }
+        else 
+        {
+            return;
+        }
+        printCellData(currentRow, currentCol, current , 10);
+    }
+    bool isDigit(string value)
+    {
+        int len = value.length();
+        for (int i = 0; i < len; i++)
+        {
+            if(!isdigit(value[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    void printCellData(int row, int col, Cell* data, int k)
+    {
+        colour(k);
+        goToRowCol((row * cellHeight) + cellHeight / 2, (col * cellWidth) + cellWidth / 2);
+        cout << data -> data;
+    }
+    
 };
