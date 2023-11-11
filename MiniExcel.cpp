@@ -10,6 +10,7 @@ struct Cell
     Cell* right;
     Cell* up;
     Cell* down;
+
     Cell(string data = "     ")
     {
         this->data = data;
@@ -30,6 +31,7 @@ private:
     int currentCol;
     int cellWidth = 10;
     int cellHeight = 5;
+
 public:
     MiniExcel()
     {
@@ -297,6 +299,70 @@ public:
         cols++;
         currentCol++;
     }
+    void insertCellByRightShift()
+    {
+        Cell* temp = current;
+        while(current -> right != nullptr)
+        {
+            current = current -> right;
+        }
+        insertColumnToRight();
+        current = current -> right;
+        while (current != temp)
+        {
+            current -> data = current -> left -> data;
+            current = current -> left;
+        }
+        current -> data = "    ";
+    }
+    void insertCellByLeftShift()
+    {
+        Cell* temp = current;
+        while (current -> left != nullptr)
+        {
+            current = current -> left;
+        }
+        insertColumnToLeft();
+        current = current -> left;
+        while (current != temp)
+        {
+            current -> data = current -> right -> data;
+            current = current -> right;
+        }
+        current -> data = "    ";
+    }
+    void insertCellByDownShift()
+    {
+        Cell* temp = current;
+        while (current -> down != nullptr)
+        {
+            current = current -> down;
+        }
+        insertRowBelow();
+        current = current -> down;
+        while (current != temp)
+        {
+            current -> data = current -> up -> data;
+            current = current -> up;
+        }
+        current -> data = "     ";
+    }
+    void insertCellByUpShift()
+    {
+        Cell* temp = current;
+        while (current -> up != nullptr)
+        {
+            current = current -> up;
+        }
+        insertRowAbove();
+        current = current -> up;
+        while (current != temp)
+        {
+            current -> data = current -> down -> data;
+            current = current -> down;
+        }
+        current -> data = "     ";
+    }
     void moveDown()
     {
         if (current -> down != nullptr)
@@ -368,5 +434,5 @@ public:
         goToRowCol((row * cellHeight) + cellHeight / 2, (col * cellWidth) + cellWidth / 2);
         cout << data -> data;
     }
-    
+
 };

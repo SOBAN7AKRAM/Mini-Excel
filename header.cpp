@@ -57,6 +57,30 @@ int main()
             obj.printGrid();
             obj.printData();
         }
+        if (GetAsyncKeyState('L'))
+        {
+            obj.insertCellByRightShift();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState('K'))
+        {
+            obj.insertCellByLeftShift();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState('M'))
+        {
+            obj.insertCellByDownShift();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState('O'))
+        {
+            obj.insertCellByUpShift();
+            obj.printGrid();
+            obj.printData();
+        }
         Sleep(100);
     }
     // obj.moveCursor();
