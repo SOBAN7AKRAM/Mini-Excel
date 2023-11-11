@@ -93,6 +93,32 @@ int main()
             obj.printGrid();
             obj.printData();
         }
+        if ((GetAsyncKeyState(VK_DELETE)) && (GetAsyncKeyState('C')))
+        {
+            obj.deleteColumn();
+            system("cls");
+            obj.printGrid();
+            obj.printData();
+        }
+        if ((GetAsyncKeyState(VK_DELETE)) && (GetAsyncKeyState('R')))
+        {
+            obj.deleteRow();
+            system("cls");
+            obj.printGrid();
+            obj.printData();
+        }
+        if ((GetAsyncKeyState(VK_HOME)) && (GetAsyncKeyState('C')))
+        {
+            obj.clearColumn();
+            obj.printGrid();
+            obj.printData();
+        }
+        if ((GetAsyncKeyState(VK_HOME)) && (GetAsyncKeyState('R')))
+        {
+            obj.clearRow();
+            obj.printGrid();
+            obj.printData();
+        }
         Sleep(100);
     }
     // obj.moveCursor();

@@ -391,6 +391,131 @@ public:
         }
         currentRow--;
     }
+    void deleteColumn()
+    {
+        if (cols <= 1)
+        {
+            return;
+        }
+        Cell* temp1 = current;
+        while(temp1 -> up != nullptr)
+        {
+            temp1 = temp1 -> up;
+        }
+        if (temp1 -> left == nullptr)
+        {
+            temp1 = temp1 -> right;
+            current = current -> right;
+            head = head -> right;
+            while (temp1 != nullptr)
+            {
+                temp1 -> left = nullptr;
+                temp1 = temp1 -> down;
+            }
+        }
+        else if (temp1 -> right == nullptr)
+        {
+            temp1 = temp1 -> left;
+            current = current -> left;
+            while (temp1 != nullptr)
+            {
+                temp1 -> right = nullptr;
+                temp1 = temp1 -> down;
+            }
+            currentCol--;
+        }
+        else
+        {
+            Cell* temp2 = temp1 -> right;
+            temp1 = temp1 -> left;
+            // Cell* temp3 = temp1;
+            current = current -> left;
+            while(temp1 != nullptr)
+            {
+                temp1 -> right = temp2;
+                temp2 -> left = temp1;
+                temp1 = temp1 -> down;
+                temp2 = temp2 -> down;
+            }
+            currentCol--;
+        }
+        cols--;
+    }
+    void deleteRow()
+    {
+        if (rows <= 1)
+        {
+            return;
+        }
+        Cell* temp1 = current;
+        while (temp1 -> left != nullptr)
+        {
+            temp1 = temp1 -> left;
+        }
+        if (temp1 -> up == nullptr)
+        {
+            current = current -> down;
+            head = head -> down;
+            temp1 = temp1 -> down;
+            while (temp1 != nullptr)
+            {
+                temp1 -> up = nullptr;
+                temp1 = temp1 -> right;
+            }
+        }
+        else if (temp1 -> down == nullptr)
+        {
+            current = current -> up;
+            temp1 = temp1 -> up;
+            while (temp1 != nullptr)
+            {
+                temp1 -> down = nullptr;
+                temp1 = temp1 -> right;
+            }
+            currentRow--;
+        }
+        else 
+        {
+            Cell* temp2 = temp1 -> down;
+            temp1 = temp1 -> up;
+            current = current -> up;
+            while(temp1 != nullptr)
+            {
+                temp2 -> up = temp1;
+                temp1 -> down = temp2;
+                temp1 = temp1 -> right;
+                temp2 = temp2 -> right;
+            }
+            currentRow--;
+        }
+        rows--;
+    }
+    void clearColumn()
+    {
+        Cell* temp1 = current;
+        while (temp1 -> up != nullptr)
+        {
+            temp1 = temp1 -> up;
+        }
+        while (temp1 -> down != nullptr)
+        {
+            temp1 -> data = "     ";
+            temp1 = temp1 -> down;
+        }
+    }
+    void clearRow()
+    {
+        Cell* temp1 = current;
+        while (temp1 -> left != nullptr)
+        {
+            temp1 = temp1 -> left;
+        }
+        while(temp1 -> right != nullptr)
+        {
+            temp1 -> data = "     ";
+            temp1 = temp1 -> right;
+        }
+    }
     void moveDown()
     {
         if (current -> down != nullptr)
