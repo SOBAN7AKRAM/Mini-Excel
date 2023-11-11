@@ -363,6 +363,34 @@ public:
         }
         current -> data = "     ";
     }
+    void deleteCellByLeftShift()
+    {
+        Cell* temp = current;
+        while (temp -> right != nullptr)
+        {
+            temp -> data = temp -> right -> data;
+            temp = temp -> right;
+        }
+        if (current -> left != nullptr)
+        {
+            current = current -> left;
+        }
+        currentCol--;
+    }
+    void deleteCellByUpShift()
+    {
+        Cell* temp = current;
+        while (temp -> down != nullptr)
+        {
+            temp -> data = temp -> down -> data;
+            temp = temp -> down;
+        }
+        if (current -> up != nullptr)
+        {
+            current = current -> up;
+        }
+        currentRow--;
+    }
     void moveDown()
     {
         if (current -> down != nullptr)
