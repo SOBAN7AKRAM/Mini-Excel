@@ -1,8 +1,15 @@
 #include <windows.h>
 #include <iostream>
 #include <conio.h>
+#include <climits>
+#include <string>
 #pragma once
 using namespace std;
+struct Cordinate
+{
+    int row;
+    int col;
+};
 struct Cell
 {
     string data;
@@ -25,12 +32,16 @@ class MiniExcel
 private:
     Cell* current;
     Cell* head;
+    Cell* rangeStart;
+    Cell* rangeEnd;
     int rows;
     int cols;
     int currentRow;
     int currentCol;
     int cellWidth = 10;
     int cellHeight = 5;
+    Cordinate RangeStart{};
+    Cordinate RangeEnd{};
 
 public:
     MiniExcel()
@@ -97,9 +108,8 @@ public:
     }
     void printRow()
     {
-       for (int ci = 0, ri = rows - 1; ci < cols; ci++)
+       for (int ci = 0, ri = rows + 1; ci < cols; ci++)
 		{
-
 			printCell(ri, ci, 7);
 		}
         rows++;
@@ -567,10 +577,15 @@ public:
         {
             return;
         }
+        eraseCell(currentRow, currentCol, 10);
         printCellData(currentRow, currentCol, current , 10);
     }
     bool isDigit(string value)
     {
+        if (value.empty())
+        {
+            return false;
+        }
         int len = value.length();
         for (int i = 0; i < len; i++)
         {
@@ -587,5 +602,287 @@ public:
         goToRowCol((row * cellHeight) + cellHeight / 2, (col * cellWidth) + cellWidth / 2);
         cout << data -> data;
     }
+    void eraseCell(int row, int col, int k)
+    {
+        colour(k);
+        goToRowCol((row * cellHeight) + cellHeight / 2, (col * cellWidth) + cellWidth / 2);
+        cout << "     ";
+    }
+    void selectMovement()
+    {
+        rangeStart = current;
+        RangeStart.row = currentRow;
+        RangeStart.col = currentCol;
+        printCell(currentRow, currentCol, 12);
+        while (true)
+        {
+            char c = _getch();
+            if (c == 'w' || c == 'W') // up w
+            {
+                moveUp();
+            }
+            else if (c == 's' || c == 'S') // down s
+            {
+                moveDown();
+            }
+            else if (c == 'a' || c == 'A') // left a
+            {
+                moveLeft();
+            }
+            else if (c == 'd' || c == 'D') // right d
+            {
+               moveRight();
+            }
+            else if ((c == 'E' || c == 'e'))
+            {
+                printCell(currentRow, currentCol, 12);
+                rangeEnd = current;
+                break;
+            }
 
+        }
+        RangeEnd.col = currentCol;
+        RangeEnd.row = currentRow; 
+        while (true)
+        {
+            char c = _getch();
+            if (c == 'w' || c == 'W') // up w
+            {
+                moveUp();
+            }
+            else if (c == 's' || c == 'S') // down s
+            {
+                moveDown();
+            }
+            else if (c == 'a' || c == 'A') // left a
+            {
+                moveLeft();
+            }
+            else if (c == 'd' || c == 'D') // right d
+            {
+               moveRight();
+            }
+            else if ((GetAsyncKeyState('C')) )
+            {
+                int count = GetRangeCount();
+                current -> data = to_string(count);
+                printCellData(currentRow, currentCol, current, 12);
+                break;
+            }
+            else if (GetAsyncKeyState('V'))
+            {
+                int sum = GetRangeSum();
+                int count = GetRangeCount();
+                current -> data = to_string(sum / count);
+                printCellData(currentRow, currentCol, current, 12);
+                break;
+            }
+            else if (GetAsyncKeyState('U') )
+            {
+                int sum = GetRangeSum();
+                current -> data = to_string(sum);
+                printCellData(currentRow, currentCol, current, 12);
+                break;
+            }
+             else if (GetAsyncKeyState('M') )
+            {
+                int max = getRangeMaximum();
+                current -> data = to_string(max);
+                printCellData(currentRow, currentCol, current, 12);
+                break;
+            }
+             else if (GetAsyncKeyState('N') )
+            {
+                int min = getRangeMinimum();
+                current -> data = to_string(min);
+                printCellData(currentRow, currentCol, current, 12);
+                break;
+            }
+        }
+       
+    }
+    int GetRangeSum()
+    {
+        int sum = 0;
+        Cell* temp = rangeStart;
+        for (int i = RangeStart.row; i <= RangeEnd.row; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = RangeStart.col; j <= RangeEnd.col; j++)
+            {
+                if (isDigit(temp -> data))
+                {
+                    sum += stoi(temp -> data);
+                }
+                temp = temp -> right;
+            }
+            temp = temp2 -> down;
+        }
+        return sum;
+    }
+    int GetRangeCount()
+    {
+        int count = 0;
+        Cell* temp = rangeStart;
+        for (int i = RangeStart.row; i <= RangeEnd.row; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = RangeStart.col; j <= RangeEnd.col; j++)
+            {
+                if (!isDigit(temp -> data))
+                {
+                    count++;
+                }
+                temp = temp -> right;
+            }
+            temp = temp2 -> down;
+        }
+        return count;
+    }
+    int getRangeMinimum()
+    {
+        int min = INT_MAX;
+        Cell* temp = rangeStart;
+        for (int i = RangeStart.row; i <= RangeEnd.row; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = RangeStart.col; j <= RangeEnd.col; j++)
+            {
+                if (isDigit(temp -> data))
+                {
+                   int t = stoi(temp -> data);
+                   if (t < min)
+                   {
+                    min = t;
+                   }
+                }
+                temp = temp -> right;
+            }
+            temp = temp2 -> down;
+        }
+        return min;
+    }
+    int getRangeMaximum()
+    {
+        int max = INT_MIN;
+        Cell* temp = rangeStart;
+        for (int i = RangeStart.row; i <= RangeEnd.row; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = RangeStart.col; j <= RangeEnd.col; j++)
+            {
+                if (isDigit(temp -> data))
+                {
+                   int t = stoi(temp -> data);
+                   if (t > max )
+                   {
+                    max = t;
+                   }
+                }
+                temp = temp -> right;
+            }
+            temp = temp2 -> down;
+        }
+        return max;
+    }
+    void performOperation()
+    {
+        rangeStart = current;
+        int sum = 0;
+        int average = 0;
+        int count = 0; 
+        int max = INT_MIN;
+        int min = INT_MAX;
+        while (true)
+        {
+            char c = _getch();
+            string r = current -> data;
+            string numeric = "";
+            for (char c : r)
+            {
+                if (isdigit(c))
+                {
+                    numeric += c;
+                }
+            }
+            if (!numeric.empty())
+            {
+                int temp = std::stoi(r);
+                if (temp < min)
+                {
+                    min = temp;
+                }
+                if (temp > max)
+                {
+                    max = temp;
+                }
+                sum += temp;
+                count++;
+            }
+            if (c == 'w' || c == 'W') // up w
+            {
+                if (current -> up != nullptr)
+                {
+                    current = current -> up;
+                    currentRow--;
+                }
+            }
+            else if (c == 's' || c == 'S') // down s
+            {
+                if (current -> down != nullptr)
+                {
+                    current = current -> down;
+                    currentRow++;
+                }
+            }
+            else if (c == 'a' || c == 'A') // left a
+            {
+                if (current -> left != nullptr)
+                {
+                    current = current -> left;
+                    currentCol--;
+                }
+            }
+            else if (c == 'd' || c == 'D') // right d
+            {
+                if (current -> right != nullptr)
+                {
+                    current = current -> right;
+                    currentCol++;
+                }
+            }
+            else if ((c == 'E' || c == 'e'))
+            {
+                break;
+            }
+            printCell(currentRow, currentCol, 10);
+        }
+        char c = _getch();
+        if (c == 's' || c == 'S')
+        {
+            current -> data = to_string(sum);
+            printCellData(currentRow,currentCol, current, 12);
+        }
+        else if (c == 'a' || c == 'A')
+        {
+            average = sum / count;
+            current -> data = to_string(average);
+            printCellData(currentRow, currentCol, current, 12);
+        }
+        else if (c == 'c' || c == 'C')
+        {
+            current -> data = to_string(count);
+            printCellData(currentRow, currentCol, current, 12);
+        }
+        else if (c == 'x' || c == 'X')
+        {
+            current -> data = to_string(max);
+            printCellData(currentRow, currentCol, current, 12);
+        }
+        else if (c == 'n' || c == 'N')
+        {
+            current -> data = to_string(min);
+            printCellData(currentRow, currentCol, current, 12);
+        }
+    }
 };

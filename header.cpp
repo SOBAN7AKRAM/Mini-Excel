@@ -9,6 +9,7 @@ int main()
     obj.printCell(0,0,10);
     while (true)
     {
+        char c =_getch();
         if (GetAsyncKeyState('S'))
         {
             obj.moveDown();
@@ -118,6 +119,16 @@ int main()
             obj.clearRow();
             obj.printGrid();
             obj.printData();
+        }
+        if ((c == 'T' || c == 't'))
+        {
+            // obj.selectMovement();
+            obj.selectMovement();
+            obj.printGrid();
+        }
+        if (GetAsyncKeyState(VK_ESCAPE))
+        {
+            break;
         }
         Sleep(100);
     }

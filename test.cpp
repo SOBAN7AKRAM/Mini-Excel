@@ -140,7 +140,6 @@ int main()
     excel.printGrid();
     while (true)
     {
-        cout << "hello";
         if (GetAsyncKeyState(VK_UP))
         {
             excel.moveCursorUp();
