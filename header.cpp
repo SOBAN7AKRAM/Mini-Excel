@@ -58,7 +58,7 @@ int main()
             obj.printGrid();
             obj.printData();
         }
-        if (GetAsyncKeyState('L'))
+        if (GetAsyncKeyState('J'))
         {
             obj.insertCellByRightShift();
             obj.printGrid();
@@ -70,7 +70,7 @@ int main()
         //     obj.printGrid();
         //     obj.printData();
         // }
-        if (GetAsyncKeyState('M'))
+        if (GetAsyncKeyState('K'))
         {
             obj.insertCellByDownShift();
             obj.printGrid();
@@ -129,6 +129,24 @@ int main()
         if (GetAsyncKeyState(VK_ESCAPE))
         {
             break;
+        }
+        if (GetAsyncKeyState('V') )
+        {
+            system("cls");
+            obj.paste();
+            obj.printGrid();
+            obj.printData();
+        }
+        if (GetAsyncKeyState('Y') )
+        {
+            obj.saveFile();
+        }
+        if (GetAsyncKeyState('L') )
+        {
+            system("cls");
+            obj.loadFile();
+            obj.printGrid();
+            obj.printData();
         }
         Sleep(100);
     }

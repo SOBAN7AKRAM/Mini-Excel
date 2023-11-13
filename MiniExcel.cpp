@@ -3,6 +3,8 @@
 #include <conio.h>
 #include <climits>
 #include <string>
+#include <vector>
+#include <fstream>
 #pragma once
 using namespace std;
 struct Cordinate
@@ -34,6 +36,7 @@ private:
     Cell* head;
     Cell* rangeStart;
     Cell* rangeEnd;
+    vector<vector<string>> clipboard;
     int rows;
     int cols;
     int currentRow;
@@ -662,14 +665,14 @@ public:
             {
                moveRight();
             }
-            else if ((GetAsyncKeyState('C')) )
+            else if ((GetAsyncKeyState('O')) )
             {
                 int count = GetRangeCount();
                 current -> data = to_string(count);
                 printCellData(currentRow, currentCol, current, 12);
                 break;
             }
-            else if (GetAsyncKeyState('V'))
+            else if (GetAsyncKeyState('Z'))
             {
                 int sum = GetRangeSum();
                 int count = GetRangeCount();
@@ -698,6 +701,18 @@ public:
                 printCellData(currentRow, currentCol, current, 12);
                 break;
             }
+            else if (GetAsyncKeyState('C') )
+            {
+                copy();
+                break;
+            }
+            else if (GetAsyncKeyState('X') )
+            {
+                cut();
+                printData();
+                break;
+            }
+           
         }
        
     }
@@ -784,6 +799,127 @@ public:
             temp = temp2 -> down;
         }
         return max;
+    }
+    void copy()
+    {
+        clipboard.clear();
+        Cell* temp = rangeStart;
+        for (int i = RangeStart.row; i <= RangeEnd.row; i++)
+        {
+            vector<string> clip;
+            Cell* temp2 = temp;
+            for (int j = RangeStart.col; j <= RangeEnd.col; j++)
+            {
+                clip.push_back(temp -> data);
+                temp = temp -> right;
+            }
+            clipboard.push_back(clip);
+            temp = temp2 -> down;
+        }
+    }
+    void cut()
+    {
+        clipboard.clear();
+        Cell* temp = rangeStart;
+        for (int i = RangeStart.row; i <= RangeEnd.row; i++)
+        {
+            vector<string> clip;
+            Cell* temp2 = temp;
+            for (int j = RangeStart.col; j <= RangeEnd.col; j++)
+            {
+                clip.push_back(temp -> data);
+                temp -> data = "     ";
+                temp = temp -> right;
+            }
+            clipboard.push_back(clip);
+            temp = temp2 -> down;
+        }
+    }
+    void paste()
+    {
+        Cell* temp = current;
+        for (int i = 0; i < clipboard.size(); i++)
+        {
+            Cell* temp2 = current;
+            for (int j = 0; j < clipboard[0].size(); j++)
+            {
+                current -> data = clipboard[i][j];
+                if (current -> right == nullptr)
+                {
+                    insertColumnToRight();
+                }
+                current = current -> right;
+            }
+            if (temp2 -> down == nullptr)
+            {
+                insertRowBelow();
+            }
+            current = temp2 -> down;
+        }
+        current = temp;
+    }
+    void saveFile()
+    {
+        Cell* temp = head;
+        ofstream file("save.txt");
+        file << rows << endl;
+        file << cols << endl;
+        for (int i = 0; i < rows; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = 0; j < cols; j++)
+            {
+                if (temp -> data == "     ")
+                {
+                    file << "space" << " ";
+                }
+                else
+                {
+                    file << temp -> data << " ";
+                }
+                temp = temp -> right;
+            }
+            file << endl;
+            temp = temp2 -> down;
+        }
+    }
+    void loadFile()
+    {
+        ifstream file("save.txt");
+        file >> rows;
+        file >> cols;
+        current = nullptr;
+        head = nullptr;
+        currentRow = currentCol = 0;
+        head = newRow();
+        current = head;
+        for (int i = 0; i < rows - 1; i++)
+        {
+            insertRowBelow();
+            rows--; // rows-- because insertRowBelow function incrementing the value of rows
+            current = current -> down;
+        }
+        current = head;
+        string data;
+        Cell* temp = current;
+        for (int i = 0; i < rows; i++)
+        {
+            Cell* temp2 = temp;
+            for (int j = 0; j < cols; j++)
+            {
+                file >> data;
+                if (data == "space")
+                {
+                    temp -> data = "     ";
+                }
+                else
+                {
+                    temp -> data = data;
+                }
+                temp = temp -> right;
+            }
+            temp = temp2 -> down;
+        }
     }
     void performOperation()
     {
