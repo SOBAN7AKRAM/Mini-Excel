@@ -150,12 +150,5 @@ int main()
         }
         Sleep(100);
     }
-    // obj.moveCursor();
-    // obj.printGrid();
-    // obj.printCell(0,0,10);
-    // obj.printCell(0,0,3);
-    // obj.printCell(0,1,3);
-    //  obj.printCell(1,0,3);
-    //  obj.printCell(1,1,3);
 
 }

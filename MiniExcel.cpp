@@ -29,6 +29,59 @@ struct Cell
         down = nullptr;
     }
 };
+class Iterator
+{
+    public:
+  Cell* curr;
+  Iterator(Cell* cell)
+  {
+    this -> curr = cell;
+  }  
+  string operator*()
+  {
+    return curr -> data;
+  }
+  Iterator operator++()
+  {
+    if (curr -> right != nullptr)
+    {
+        curr = curr -> right;
+    }
+    return *this;
+  }
+  Iterator operator--()
+  {
+    if (curr -> left != nullptr)
+    {
+        curr = curr -> left;
+    }
+    return *this;
+  }
+  Iterator movedown()
+  {
+    if (curr -> down != nullptr)
+    {
+        curr = curr -> down;
+    }
+    return *this;
+  }
+  Iterator moveup()
+  {
+    if (curr -> up != nullptr)
+    {
+        curr = curr -> up;
+    }
+    return *this;
+  }
+  bool operator==(Iterator other)
+  {
+    return (curr == other.curr);
+  }
+  bool operator!=(Iterator other)
+  {
+    return (curr != other.curr);
+  }
+};
 class MiniExcel
 {
 private:
@@ -115,7 +168,7 @@ public:
 		{
 			printCell(ri, ci, 7);
 		}
-        rows++;
+        // rows++;
         // printGrid();
     }
     void printData()
@@ -1020,5 +1073,15 @@ public:
             current -> data = to_string(min);
             printCellData(currentRow, currentCol, current, 12);
         }
+    }
+
+    // iterator functions to get start and ending cell
+    Iterator begin()
+    {
+        return Iterator(head);
+    }
+    Iterator end()
+    {
+        return Iterator(nullptr);
     }
 };
